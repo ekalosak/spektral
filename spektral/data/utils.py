@@ -1,7 +1,9 @@
 import numpy as np
 import tensorflow as tf
 from scipy import sparse as sp
+from typing import Collection
 
+from spektral.data.graph import Graph
 from spektral.utils import pad_jagged_array
 from spektral.utils.sparse import sp_matrix_to_sp_tensor
 
@@ -188,8 +190,10 @@ def batch_generator(data, batch_size=32, epochs=None, shuffle=True):
     :param shuffle: whether to shuffle the data at the beginning of each epoch
     :return: batches of size `batch_size`.
     """
-    if not isinstance(data, (list, tuple)):
+    if isinstance(data, Graph):
         data = [data]
+    elif not isinstance(data, Collection):
+        raise TypeError(f'data must be a Collection, got {type(data)}')
     if len(data) < 1:
         raise ValueError("data cannot be empty")
     if len({len(item) for item in data}) > 1:
